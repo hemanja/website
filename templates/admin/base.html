@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %} | {{ site_config.BRAND_NAME }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: {{ site_config.PRIMARY_COLOR }};
+        }
+        .sidebar { background: linear-gradient(180deg, #1a1a2e, #16213e); }
+        .sidebar-link:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-link.active { background: var(--primary); }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex min-h-screen">
+        <!-- 侧边栏 -->
+        <aside class="sidebar w-64 text-white flex-shrink-0">
+            <div class="p-6 border-b border-white/10">
+                <h1 class="text-xl font-bold">{{ site_config.BRAND_NAME }}</h1>
+                <p class="text-sm text-gray-400">管理后台</p>
+            </div>
+            
+            <nav class="p-4">
+                <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg mb-2 {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                    <i class="fas fa-home"></i><span>Dashboard</span>
+                </a>
+                
+                <a href="{{ url_for('admin_products') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg mb-2 {% if 'product' in request.endpoint %}active{% endif %}">
+                    <i class="fas fa-box"></i><span>产品管理</span>
+                </a>
+                
+                <a href="{{ url_for('admin_categories') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg mb-2 {% if 'category' in request.endpoint %}active{% endif %}">
+                    <i class="fas fa-folder"></i><span>分类管理</span>
+                </a>
+                
+                <a href="{{ url_for('admin_inquiries') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg mb-2 {% if 'inquiry' in request.endpoint %}active{% endif %}">
+                    <i class="fas fa-envelope"></i><span>询价管理</span>
+                </a>
+                
+                <div class="mt-8 pt-4 border-t border-white/10">
+                    <a href="/" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg mb-2">
+                        <i class="fas fa-external-link-alt"></i><span>访问前台</span>
+                    </a>
+                    <a href="{{ url_for('admin_logout') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                        <i class="fas fa-sign-out-alt"></i><span>退出登录</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- 主内容 -->
+        <main class="flex-1">
+            <!-- 顶部栏 -->
+            <header class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+                <h2 class="text-xl font-semibold">{% block header %}Dashboard{% endblock %}</h2>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-500">管理员: {{ current_user.username }}</span>
+                </div>
+            </header>
+            
+            <!-- 内容区 -->
+            <div class="p-6">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

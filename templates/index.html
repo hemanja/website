@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero区域 -->
+<section class="hero-gradient text-white py-20">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                    {{ site_config.BRAND_TAGLINE if lang == 'zh' else site_config.BRAND_TAGLINE_EN }}
+                </h1>
+                <p class="text-xl text-gray-200 mb-8">
+                    {% if lang == 'en' %}
+                    Quality Assurance · Global Export · Professional Service
+                    {% else %}
+                    品质保障 · 全球出口 · 专业服务
+                    {% endif %}
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="/products" class="btn-secondary text-white px-8 py-3 rounded-lg font-semibold text-lg">
+                        {{ 'Browse Products' if lang == 'en' else '浏览产品' }}
+                    </a>
+                    <a href="/contact" class="bg-white text-gray-800 px-8 py-3 rounded-lg font-semibold text-lg hover:bg-gray-100">
+                        {{ 'Get Quote' if lang == 'en' else '获取报价' }}
+                    </a>
+                </div>
+                
+                <!-- 数据展示 - GEO关键 -->
+                <div class="flex flex-wrap gap-8 mt-12">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold">{{ site_config.EXPORT_COUNTRIES }}</div>
+                        <div class="text-sm text-gray-300">{{ 'Years Experience' if lang == 'en' else '年行业经验' }}</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold">{{ site_config.EXPORT_COUNTRIES }}</div>
+                        <div class="text-sm text-gray-300">{{ 'Export Countries' if lang == 'en' else '出口国家' }}</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold">1000+</div>
+                        <div class="text-sm text-gray-300">{{ 'Partners' if lang == 'en' else '合作客户' }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <!-- 可以放产品图片或工厂图 -->
+                <div class="bg-white/10 rounded-2xl p-8 text-center">
+                    <i class="fas fa-industry text-8xl text-white/50 mb-4"></i>
+                    <p class="text-lg">{{ 'Since' if lang == 'en' else '成立于' }} {{ site_config.ESTABLISHED }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 特色卖点 -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12">
+            {{ 'Why Choose Us?' if lang == 'en' else '为什么选择我们？' }}
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {% for usp in site_config.USP %}
+            <div class="text-center p-6 bg-gray-50 rounded-xl">
+                <div class="text-4xl mb-4">{{ usp.icon }}</div>
+                <h3 class="font-semibold text-lg mb-2">{{ usp.title if lang == 'zh' else usp.title_en }}</h3>
+                <p class="text-gray-600 text-sm">{{ usp.desc }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- 产品分类 -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold">
+                {{ 'Product Categories' if lang == 'en' else '产品分类' }}
+            </h2>
+            <a href="/products" class="text-primary font-medium hover:underline">
+                {{ 'View All' if lang == 'en' else '查看全部' }} →
+            </a>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {% for category in categories %}
+            <a href="/products?category={{ category.slug }}" class="card-hover bg-white rounded-xl overflow-hidden shadow-sm">
+                {% if category.image %}
+                <img src="{{ category.image }}" alt="{{ category.name_en if lang == 'en' else category.name }}" class="w-full h-40 object-cover">
+                {% else %}
+                <div class="w-full h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                    <i class="fas fa-box text-4xl text-gray-400"></i>
+                </div>
+                {% endif %}
+                <div class="p-4">
+                    <h3 class="font-semibold">{{ category.name_en if lang == 'en' else category.name }}</h3>
+                    <p class="text-sm text-gray-500">{{ category.products|length }} {{ 'products' if lang == 'en' else '个产品' }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- 热门产品 -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold">
+                {{ 'Featured Products' if lang == 'en' else '热门产品' }}
+            </h2>
+            <a href="/products" class="text-primary font-medium hover:underline">
+                {{ 'View All' if lang == 'en' else '查看全部' }} →
+            </a>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {% for product in featured_products %}
+            <div class="card-hover bg-white rounded-xl overflow-hidden shadow-sm border">
+                <a href="/product/{{ product.slug }}">
+                    {% if product.main_image %}
+                    <img src="{{ product.main_image }}" alt="{{ product.name_en if lang == 'en' else product.name }}" class="w-full h-48 object-cover">
+                    {% else %}
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                        <i class="fas fa-image text-4xl text-gray-400"></i>
+                    </div>
+                    {% endif %}
+                </a>
+                <div class="p-4">
+                    <a href="/product/{{ product.slug }}" class="font-semibold hover:text-primary">
+                        {{ product.name_en if lang == 'en' else product.name }}
+                    </a>
+                    <div class="mt-2 text-sm text-gray-500">
+                        {% if product.temperature_range %}
+                        <span class="inline-block bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs mr-1">
+                            {{ product.temperature_range }}
+                        </span>
+                        {% endif %}
+                        {% if product.voltage_rating %}
+                        <span class="inline-block bg-green-50 text-green-600 px-2 py-0.5 rounded text-xs">
+                            {{ product.voltage_rating }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-primary font-semibold">{{ product.price or ('Inquiry' if lang == 'en' else '询价') }}</span>
+                        <button onclick="Cart.add({id: {{ product.id }}, name: '{{ product.name }}', sku: '{{ product.sku }}'})" 
+                                class="text-sm bg-primary text-white px-3 py-1 rounded hover:opacity-90">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- 合作品牌 - GEO关键 -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-4">
+            {{ 'Trusted by Leading Brands' if lang == 'en' else '合作品牌' }}
+        </h2>
+        <p class="text-center text-gray-600 mb-12">
+            {{ '18 years experience, serving global partners' if lang == 'en' else '18年行业经验，服务全球合作伙伴' }}
+        </p>
+        <div class="flex flex-wrap justify-center items-center gap-8">
+            {% for partner in site_config.PARTNERS %}
+            <div class="bg-white px-8 py-4 rounded-lg shadow-sm text-center">
+                <div class="font-bold text-lg text-gray-800">{{ partner.name_en }}</div>
+                <div class="text-sm text-gray-500">{{ partner.category }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- FAQ区域 - GEO关键 -->
+<section class="py-16 bg-white">
+    <div class="max-w-3xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12">
+            {{ 'Frequently Asked Questions' if lang == 'en' else '常见问题' }}
+        </h2>
+        <div class="space-y-4">
+            {% for faq in faqs %}
+            <details class="bg-gray-50 rounded-lg">
+                <summary class="px-6 py-4 cursor-pointer font-medium hover:bg-gray-100 rounded-lg">
+                    {{ faq.question_en if lang == 'en' else faq.question }}
+                </summary>
+                <div class="px-6 py-4 text-gray-600 border-t">
+                    {{ faq.answer_en if lang == 'en' else faq.answer }}
+                </div>
+            </details>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-8">
+            <a href="/faq" class="text-primary font-medium hover:underline">
+                {{ 'View All FAQ' if lang == 'en' else '查看全部问题' }} →
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA区域 -->
+<section class="py-16 hero-gradient text-white">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-4">
+            {{ 'Ready to Start Your Project?' if lang == 'en' else '准备开始您的项目？' }}
+        </h2>
+        <p class="text-xl text-gray-200 mb-8">
+            {{ 'Contact us for free samples and competitive quotes' if lang == 'en' else '联系我们获取免费样品和有竞争力的报价' }}
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="/contact" class="btn-secondary text-white px-8 py-3 rounded-lg font-semibold">
+                {{ 'Get Free Quote' if lang == 'en' else '免费报价' }}
+            </a>
+            <a href="https://wa.me/{{ site_config.WHATSAPP|replace('+','') }}" target="_blank" 
+               class="bg-green-500 text-white px-8 py-3 rounded-lg font-semibold flex items-center">
+                <i class="fab fa-whatsapp mr-2 text-xl"></i>
+                WhatsApp
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

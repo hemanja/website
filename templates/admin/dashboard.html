@@ -1,0 +1,117 @@
+{% extends "admin/base.html" %}
+
+{% block header %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- 统计卡片 -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">产品总数</p>
+                <p class="text-3xl font-bold text-gray-800">{{ stats.products }}</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-lg">
+                <i class="fas fa-box text-blue-600 text-2xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">产品分类</p>
+                <p class="text-3xl font-bold text-gray-800">{{ stats.categories }}</p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-lg">
+                <i class="fas fa-folder text-green-600 text-2xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">待处理询价</p>
+                <p class="text-3xl font-bold text-orange-600">{{ stats.inquiries }}</p>
+            </div>
+            <div class="bg-orange-100 p-3 rounded-lg">
+                <i class="fas fa-envelope text-orange-600 text-2xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">总询价数</p>
+                <p class="text-3xl font-bold text-gray-800">{{ stats.orders_total }}</p>
+            </div>
+            <div class="bg-purple-100 p-3 rounded-lg">
+                <i class="fas fa-chart-bar text-purple-600 text-2xl"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 快捷操作 -->
+<div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+    <h3 class="font-bold text-lg mb-4">快捷操作</h3>
+    <div class="flex flex-wrap gap-4">
+        <a href="{{ url_for('admin_product_add') }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+            <i class="fas fa-plus mr-2"></i>添加产品
+        </a>
+        <a href="{{ url_for('admin_category_add') }}" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+            <i class="fas fa-folder-plus mr-2"></i>添加分类
+        </a>
+        <a href="{{ url_for('admin_inquiries') }}" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700">
+            <i class="fas fa-envelope mr-2"></i>查看询价
+        </a>
+    </div>
+</div>
+
+<!-- 最近询价 -->
+<div class="bg-white rounded-xl shadow-sm p-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-lg">最近询价</h3>
+        <a href="{{ url_for('admin_inquiries') }}" class="text-blue-600 hover:underline">查看全部</a>
+    </div>
+    
+    {% if recent_inquiries %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left">订单号</th>
+                    <th class="px-4 py-3 text-left">客户</th>
+                    <th class="px-4 py-3 text-left">邮箱</th>
+                    <th class="px-4 py-3 text-left">状态</th>
+                    <th class="px-4 py-3 text-left">时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inquiry in recent_inquiries %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 font-mono text-xs">{{ inquiry.order_no }}</td>
+                    <td class="px-4 py-3">{{ inquiry.name }}</td>
+                    <td class="px-4 py-3">{{ inquiry.email }}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 rounded text-xs 
+                            {% if inquiry.status == 'pending' %}bg-yellow-100 text-yellow-700{% endif %}
+                            {% if inquiry.status == 'quoted' %}bg-blue-100 text-blue-700{% endif %}
+                            {% if inquiry.status == 'confirmed' %}bg-green-100 text-green-700{% endif %}
+                        ">
+                            {{ inquiry.status }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-gray-500">{{ inquiry.created_at.strftime('%m-%d %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-gray-500 text-center py-8">暂无询价</p>
+    {% endif %}
+</div>
+{% endblock %}

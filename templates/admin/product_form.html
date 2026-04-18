@@ -1,0 +1,201 @@
+{% extends "admin/base.html" %}
+
+{% block header %}{{ '编辑产品' if product else '添加产品' }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        <!-- 基本信息 -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-bold text-lg mb-4">基本信息</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">产品名称 (中文) *</label>
+                    <input type="text" name="name" value="{{ product.name if product else '' }}" required
+                           class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Product Name (English) *</label>
+                    <input type="text" name="name_en" value="{{ product.name_en if product else '' }}" required
+                           class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">URL Slug *</label>
+                    <input type="text" name="slug" value="{{ product.slug if product else '' }}" required
+                           placeholder="fiberglass-sleeve-1kv"
+                           class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">SKU</label>
+                    <input type="text" name="sku" value="{{ product.sku if product else '' }}"
+                           placeholder="FGS-1KV"
+                           class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">分类 *</label>
+                    <select name="category_id" required class="w-full border rounded-lg px-4 py-2">
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if product and product.category_id == cat.id %}selected{% endif %}>
+                            {{ cat.name }} ({{ cat.name_en }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">产品主图</label>
+                    <input type="file" name="main_image" accept="image/*"
+                           class="w-full border rounded-lg px-4 py-2">
+                    {% if product and product.main_image %}
+                    <p class="text-sm text-gray-500 mt-1">当前: {{ product.main_image }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- 产品描述 -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-bold text-lg mb-4">产品描述</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">描述 (中文)</label>
+                    <textarea name="description" rows="4"
+                              class="w-full border rounded-lg px-4 py-2">{{ product.description if product else '' }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Description (English)</label>
+                    <textarea name="description_en" rows="4"
+                              class="w-full border rounded-lg px-4 py-2">{{ product.description_en if product else '' }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">产品特性 (每行一条)</label>
+                    <textarea name="features" rows="3" placeholder="耐高温 150°C&#10;UL认证&#10;防火阻燃"
+                              class="w-full border rounded-lg px-4 py-2">{{ product.features if product else '' }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Features (one per line)</label>
+                    <textarea name="features_en" rows="3" placeholder="Heat resistant 150°C&#10;UL certified&#10;Flame retardant"
+                              class="w-full border rounded-lg px-4 py-2">{{ product.features_en if product else '' }}</textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 技术参数 - GEO关键 -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-bold text-lg mb-4">技术参数</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">温度范围</label>
+                    <input type="text" name="temperature_range" 
+                           value="{{ product.temperature_range if product else '' }}"
+                           placeholder="-60°C ~ +200°C"
+                           class="w-full border rounded-lg px-4 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">电压等级</label>
+                    <input type="text" name="voltage_rating" 
+                           value="{{ product.voltage_rating if product else '' }}"
+                           placeholder="1kV, 3kV"
+                           class="w-full border rounded-lg px-4 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">电压范围</label>
+                    <input type="text" name="voltage_range" 
+                           value="{{ product.voltage_range if product else '' }}"
+                           placeholder="100V-1000V"
+                           class="w-full border rounded-lg px-4 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">认证 (逗号分隔)</label>
+                    <input type="text" name="certifications" 
+                           value="{{ product.certifications if product else '' }}"
+                           placeholder="UL, VDE, SGS, RoHS"
+                           class="w-full border rounded-lg px-4 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">规格参数 (JSON)</label>
+                    <textarea name="specifications" rows="3"
+                              placeholder='[{"name":"内径","value":"1-50mm"},{"name":"壁厚","value":"0.5-2mm"}]'
+                              class="w-full border rounded-lg px-4 py-2 font-mono text-xs">{{ product.specifications if product else '' }}</textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 价格与库存 -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-bold text-lg mb-4">价格与库存</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">价格/报价方式</label>
+                    <input type="text" name="price" 
+                           value="{{ product.price if product else '' }}"
+                           placeholder="询价 / $0.5-2.0/meter"
+                           class="w-full border rounded-lg px-4 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">起订量</label>
+                    <input type="text" name="min_order" 
+                           value="{{ product.min_order if product else '1000 meters' }}"
+                           class="w-full border rounded-lg px-4 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">交货期</label>
+                    <input type="text" name="lead_time" 
+                           value="{{ product.lead_time if product else '7-15 days' }}"
+                           class="w-full border rounded-lg px-4 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">库存数量</label>
+                    <input type="number" name="stock" 
+                           value="{{ product.stock if product else 0 }}"
+                           class="w-full border rounded-lg px-4 py-2">
+                </div>
+            </div>
+        </div>
+        
+        <!-- SEO设置 -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-bold text-lg mb-4">SEO设置</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Meta Title</label>
+                    <input type="text" name="meta_title" 
+                           value="{{ product.meta_title if product else '' }}"
+                           class="w-full border rounded-lg px-4 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Meta Description</label>
+                    <textarea name="meta_description" rows="2"
+                              class="w-full border rounded-lg px-4 py-2">{{ product.meta_description if product else '' }}</textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 状态设置 -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-bold text-lg mb-4">状态设置</h3>
+            <div class="flex space-x-6">
+                <label class="flex items-center">
+                    <input type="checkbox" name="is_active" {% if not product or product.is_active %}checked{% endif %}
+                           class="mr-2 w-5 h-5">
+                    <span>上架</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="is_featured" {% if product and product.is_featured %}checked{% endif %}
+                           class="mr-2 w-5 h-5">
+                    <span>推荐产品</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- 提交按钮 -->
+        <div class="flex space-x-4">
+            <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700">
+                <i class="fas fa-save mr-2"></i>{{ '保存更改' if product else '添加产品' }}
+            </button>
+            <a href="{{ url_for('admin_products') }}" class="border px-8 py-3 rounded-lg hover:bg-gray-50">
+                取消
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

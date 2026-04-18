@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="{{ 'en' if lang == 'en' else 'zh-CN' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- GEO: 核心Meta标签 -->
+    <title>{% block title %}{{ site_config.META_TITLE if lang == 'zh' else site_config.META_TITLE_EN }}{% endblock %} | {{ site_config.BRAND_NAME }}</title>
+    <meta name="description" content="{{ site_config.META_DESCRIPTION if lang == 'zh' else site_config.META_DESCRIPTION_EN }}">
+    
+    <!-- GEO: Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ site_config.BRAND_NAME }}">
+    <meta property="og:title" content="{% block og_title %}{{ site_config.BRAND_NAME }}{% endblock %}">
+    <meta property="og:description" content="{{ site_config.META_DESCRIPTION if lang == 'zh' else site_config.META_DESCRIPTION_EN }}">
+    
+    <!-- GEO: 结构化数据 -->
+    {% if org_schema %}
+    <script type="application/ld+json">{{ org_schema|tojson }}</script>
+    {% endif %}
+    {% if faq_schema %}
+    <script type="application/ld+json">{{ faq_schema|tojson }}</script>
+    {% endif %}
+    {% if product_schema %}
+    <script type="application/ld+json">{{ product_schema|tojson }}</script>
+    {% endif %}
+    
+    <!-- GEO: 实体关联标记 -->
+    <meta name="geo.region" content="CN-GD">
+    <meta name="geo.placename" content="Foshan">
+    <link rel="canonical" href="https://{{ site_config.DOMAIN }}{{ request.path }}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: {{ site_config.PRIMARY_COLOR }};
+            --secondary: {{ site_config.SECONDARY_COLOR }};
+        }
+        body { font-family: 'Inter', -apple-system, sans-serif; }
+        .btn-primary { background: var(--primary); }
+        .btn-primary:hover { filter: brightness(1.1); }
+        .btn-secondary { background: var(--secondary); }
+        .text-primary { color: var(--primary) !important; }
+        .bg-primary { background: var(--primary) !important; }
+        .border-primary { border-color: var(--primary) !important; }
+        .hero-gradient { background: linear-gradient(135deg, var(--primary), #0f172a); }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+        .card-hover { transition: all 0.3s ease; }
+        
+        /* 购物车徽章 */
+        .cart-badge { position: absolute; top: -6px; right: -6px; background: var(--secondary); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+        
+        /* GEO: 机器可读数据隐藏区 */
+        .geo-data { display: none; }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50">
+    <!-- 顶部公告栏 -->
+    <div class="bg-primary text-white text-center py-2 text-sm">
+        {% if lang == 'en' %}
+        🏭 {{ site_config.CATEGORY_NAME_EN }} Manufacturer Since {{ site_config.ESTABLISHED }} | 
+        {{ site_config.EXPORT_COUNTRIES }} Countries | Free Samples Available
+        {% else %}
+        🏭 专注{{ site_config.CATEGORY_NAME }}{{ site_config.EXPORT_COUNTRIES|replace('+','') }}年 | 
+        出口{{ site_config.EXPORT_COUNTRIES }}国家 | 免费样品
+        {% endif %}
+    </div>
+    
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="/" class="flex items-center space-x-2">
+                    <span class="text-2xl font-bold text-primary">{{ site_config.BRAND_NAME }}</span>
+                </a>
+                
+                <!-- 导航链接 -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="text-gray-700 hover:text-primary font-medium">
+                        {{ 'Home' if lang == 'en' else '首页' }}
+                    </a>
+                    <a href="/products" class="text-gray-700 hover:text-primary font-medium">
+                        {{ 'Products' if lang == 'en' else '产品中心' }}
+                    </a>
+                    <a href="/about" class="text-gray-700 hover:text-primary font-medium">
+                        {{ 'About' if lang == 'en' else '关于我们' }}
+                    </a>
+                    <a href="/faq" class="text-gray-700 hover:text-primary font-medium">
+                        {{ 'FAQ' if lang == 'en' else '常见问题' }}
+                    </a>
+                    <a href="/contact" class="text-gray-700 hover:text-primary font-medium">
+                        {{ 'Contact' if lang == 'en' else '联系我们' }}
+                    </a>
+                </div>
+                
+                <!-- 右侧操作 -->
+                <div class="flex items-center space-x-4">
+                    <!-- 语言切换 -->
+                    <div class="relative">
+                        <select onchange="window.location.href='/lang/'+this.value" class="text-sm border rounded px-2 py-1">
+                            <option value="zh" {% if lang == 'zh' %}selected{% endif %}>中文</option>
+                            <option value="en" {% if lang == 'en' %}selected{% endif %}>EN</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 购物车 -->
+                    <a href="/contact" class="relative text-gray-700 hover:text-primary">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="cart-badge" id="cart-count">0</span>
+                    </a>
+                    
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/{{ site_config.WHATSAPP|replace('+','') }}" target="_blank" 
+                       class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600">
+                        <i class="fab fa-whatsapp mr-1"></i>WhatsApp
+                    </a>
+                    
+                    <!-- 移动端菜单 -->
+                    <button class="md:hidden" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden border-t">
+            <div class="px-4 py-2 space-y-2">
+                <a href="/" class="block py-2 text-gray-700">{{ 'Home' if lang == 'en' else '首页' }}</a>
+                <a href="/products" class="block py-2 text-gray-700">{{ 'Products' if lang == 'en' else '产品中心' }}</a>
+                <a href="/about" class="block py-2 text-gray-700">{{ 'About' if lang == 'en' else '关于我们' }}</a>
+                <a href="/contact" class="block py-2 text-gray-700">{{ 'Contact' if lang == 'en' else '联系我们' }}</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主内容 -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- 底部 -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- 公司信息 -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">{{ site_config.BRAND_NAME }}</h3>
+                    <p class="text-gray-400 text-sm mb-4">{{ site_config.BRAND_NAME_CN }}</p>
+                    <p class="text-gray-400 text-sm">{{ site_config.BRAND_STORY[:100]|trim }}...</p>
+                </div>
+                
+                <!-- 快速链接 -->
+                <div>
+                    <h4 class="font-semibold mb-4">{{ 'Quick Links' if lang == 'en' else '快速链接' }}</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="/products" class="hover:text-white">{{ 'Products' if lang == 'en' else '产品中心' }}</a></li>
+                        <li><a href="/about" class="hover:text-white">{{ 'About' if lang == 'en' else '关于我们' }}</a></li>
+                        <li><a href="/faq" class="hover:text-white">FAQ</a></li>
+                        <li><a href="/contact" class="hover:text-white">{{ 'Contact' if lang == 'en' else '联系我们' }}</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 认证 -->
+                <div>
+                    <h4 class="font-semibold mb-4">{{ 'Certifications' if lang == 'en' else '资质认证' }}</h4>
+                    <div class="flex flex-wrap gap-2">
+                        {% for cert in site_config.CERTIFICATIONS %}
+                        <span class="bg-gray-800 px-3 py-1 rounded text-xs">{{ cert }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- 联系方式 -->
+                <div>
+                    <h4 class="font-semibold mb-4">{{ 'Contact' if lang == 'en' else '联系方式' }}</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><i class="fas fa-phone mr-2"></i>{{ site_config.PHONE }}</li>
+                        <li><i class="fas fa-envelope mr-2"></i>{{ site_config.EMAIL }}</li>
+                        <li><i class="fab fa-whatsapp mr-2"></i>{{ site_config.WHATSAPP }}</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i>{{ site_config.ADDRESS if lang == 'zh' else site_config.ADDRESS_EN }}</li>
+                    </ul>
+                    <!-- 社交链接 -->
+                    <div class="flex space-x-3 mt-4">
+                        {% if site_config.SOCIAL_LINKS.facebook %}
+                        <a href="{{ site_config.SOCIAL_LINKS.facebook }}" class="text-gray-400 hover:text-white"><i class="fab fa-facebook text-xl"></i></a>
+                        {% endif %}
+                        {% if site_config.SOCIAL_LINKS.linkedin %}
+                        <a href="{{ site_config.SOCIAL_LINKS.linkedin }}" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin text-xl"></i></a>
+                        {% endif %}
+                        {% if site_config.SOCIAL_LINKS.whatsapp %}
+                        <a href="{{ site_config.SOCIAL_LINKS.whatsapp }}" class="text-gray-400 hover:text-white"><i class="fab fa-whatsapp text-xl"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+                <p>© {{ site_config.ESTABLISHED }}-{{ now().year if now else 2026 }} {{ site_config.BRAND_NAME }}. All Rights Reserved.</p>
+                <p class="mt-1">{{ site_config.BRAND_NAME_CN }}</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 购物车JS -->
+    <script>
+    // 购物车管理
+    const Cart = {
+        items: JSON.parse(localStorage.getItem('cart') || '[]'),
+        
+        add(product) {
+            const existing = this.items.find(i => i.id === product.id);
+            if (existing) {
+                existing.qty = (existing.qty || 1) + 1;
+            } else {
+                this.items.push({...product, qty: 1});
+            }
+            this.save();
+            this.showToast();
+        },
+        
+        remove(productId) {
+            this.items = this.items.filter(i => i.id !== productId);
+            this.save();
+        },
+        
+        save() {
+            localStorage.setItem('cart', JSON.stringify(this.items));
+            this.updateBadge();
+        },
+        
+        updateBadge() {
+            const badge = document.getElementById('cart-count');
+            if (badge) badge.textContent = this.items.length;
+        },
+        
+        showToast() {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            toast.textContent = '{{ "Added to inquiry list!" if lang == "en" else "已加入询价单！" }}';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        },
+        
+        getTotal() {
+            return this.items.reduce((sum, i) => sum + (i.qty || 1), 0);
+        }
+    };
+    
+    // 页面加载时更新购物车徽章
+    Cart.updateBadge();
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

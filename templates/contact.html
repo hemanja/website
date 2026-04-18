@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Contact Us' if lang == 'en' else '联系我们' }} | {{ site_config.BRAND_NAME }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- 面包屑 -->
+    <nav class="text-sm text-gray-500 mb-6">
+        <a href="/" class="hover:text-primary">{{ 'Home' if lang == 'en' else '首页' }}</a>
+        <span class="mx-2">/</span>
+        <span>{{ 'Contact' if lang == 'en' else '联系我们' }}</span>
+    </nav>
+    
+    <div class="grid md:grid-cols-3 gap-8">
+        <!-- 左侧联系信息 -->
+        <div class="md:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-xl font-bold mb-6">{{ 'Get in Touch' if lang == 'en' else '联系方式' }}</h2>
+                
+                <div class="space-y-6">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-primary/10 p-3 rounded-lg">
+                            <i class="fas fa-phone text-primary text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold">{{ 'Phone' if lang == 'en' else '电话' }}</div>
+                            <a href="tel:{{ site_config.PHONE }}" class="text-gray-600 hover:text-primary">{{ site_config.PHONE }}</a>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-primary/10 p-3 rounded-lg">
+                            <i class="fas fa-envelope text-primary text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold">{{ 'Email' if lang == 'en' else '邮箱' }}</div>
+                            <a href="mailto:{{ site_config.EMAIL }}" class="text-gray-600 hover:text-primary">{{ site_config.EMAIL }}</a>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-green-50 p-3 rounded-lg">
+                            <i class="fab fa-whatsapp text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold">WhatsApp</div>
+                            <a href="https://wa.me/{{ site_config.WHATSAPP|replace('+','') }}" target="_blank" 
+                               class="text-gray-600 hover:text-primary">{{ site_config.WHATSAPP }}</a>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-primary/10 p-3 rounded-lg">
+                            <i class="fas fa-map-marker-alt text-primary text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold">{{ 'Address' if lang == 'en' else '地址' }}</div>
+                            <p class="text-gray-600">{{ site_config.ADDRESS if lang == 'zh' else site_config.ADDRESS_EN }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 社交链接 -->
+                <div class="mt-8 pt-6 border-t">
+                    <div class="font-semibold mb-4">{{ 'Follow Us' if lang == 'en' else '关注我们' }}</div>
+                    <div class="flex space-x-4">
+                        {% if site_config.SOCIAL_LINKS.facebook %}
+                        <a href="{{ site_config.SOCIAL_LINKS.facebook }}" target="_blank" 
+                           class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:opacity-90">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        {% endif %}
+                        {% if site_config.SOCIAL_LINKS.linkedin %}
+                        <a href="{{ site_config.SOCIAL_LINKS.linkedin }}" target="_blank"
+                           class="bg-blue-700 text-white w-10 h-10 rounded-full flex items-center justify-center hover:opacity-90">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 营业时间 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mt-6">
+                <h3 class="font-bold mb-4">{{ 'Business Hours' if lang == 'en' else '营业时间' }}</h3>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div class="flex justify-between">
+                        <span>{{ 'Monday - Friday' if lang == 'en' else '周一 - 周五' }}</span>
+                        <span>9:00 - 18:00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>{{ 'Saturday' if lang == 'en' else '周六' }}</span>
+                        <span>9:00 - 12:00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>{{ 'Sunday' if lang == 'en' else '周日' }}</span>
+                        <span class="text-red-500">{{ 'Closed' if lang == 'en' else '休息' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧询价表单 -->
+        <div class="md:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm p-8">
+                <h2 class="text-2xl font-bold mb-2">{{ 'Request a Quote' if lang == 'en' else '获取报价' }}</h2>
+                <p class="text-gray-600 mb-6">
+                    {{ 'Fill out the form below and we will get back to you within 24 hours.' if lang == 'en' else '填写下方表单，我们将在24小时内回复您。' }}
+                </p>
+                
+                <!-- 购物车提示 -->
+                <div id="cart-items" class="hidden bg-blue-50 rounded-lg p-4 mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold text-blue-800">
+                            <i class="fas fa-shopping-cart mr-2"></i>{{ 'Your Inquiry List' if lang == 'en' else '您的询价清单' }}
+                        </span>
+                        <button onclick="clearCart()" class="text-sm text-red-600 hover:underline">{{ 'Clear' if lang == 'en' else '清空' }}</button>
+                    </div>
+                    <div id="cart-items-list" class="text-sm text-gray-600"></div>
+                </div>
+                
+                <form method="POST" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">
+                                {{ 'Your Name' if lang == 'en' else '您的姓名' }} *
+                            </label>
+                            <input type="text" name="name" required
+                                   class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="{{ 'John Doe' if lang == 'en' else '张三' }}">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">
+                                {{ 'Company Name' if lang == 'en' else '公司名称' }}
+                            </label>
+                            <input type="text" name="company"
+                                   class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="{{ 'ABC Company' if lang == 'en' else 'ABC公司' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">
+                                Email *
+                            </label>
+                            <input type="email" name="email" required
+                                   class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">
+                                {{ 'Phone / WhatsApp' if lang == 'en' else '电话/WhatsApp' }}
+                            </label>
+                            <input type="text" name="phone"
+                                   class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="+86 138 0000 0000">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            {{ 'Country' if lang == 'en' else '国家/地区' }}
+                        </label>
+                        <select name="country" class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">{{ 'Select country' if lang == 'en' else '选择国家' }}</option>
+                            <option value="China">{{ 'China' if lang == 'en' else '中国' }}</option>
+                            <option value="USA">USA</option>
+                            <option value="Germany">Germany</option>
+                            <option value="UK">UK</option>
+                            <option value="Japan">{{ 'Japan' if lang == 'en' else '日本' }}</option>
+                            <option value="Korea">{{ 'Korea' if lang == 'en' else '韩国' }}</option>
+                            <option value="Vietnam">{{ 'Vietnam' if lang == 'en' else '越南' }}</option>
+                            <option value="Thailand">{{ 'Thailand' if lang == 'en' else '泰国' }}</option>
+                            <option value="Indonesia">{{ 'Indonesia' if lang == 'en' else '印度尼西亚' }}</option>
+                            <option value="Other">{{ 'Other' if lang == 'en' else '其他' }}</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            {{ 'Product Interest' if lang == 'en' else '感兴趣的产品' }}
+                        </label>
+                        <input type="text" name="products" id="products-input"
+                               class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="{{ 'e.g. Fiberglass sleeve, 1000 meters' if lang == 'en' else '例如：玻纤套管，1000米' }}">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            {{ 'Message' if lang == 'en' else '留言内容' }} *
+                        </label>
+                        <textarea name="message" rows="5" required
+                                  class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                  placeholder="{{ 'Please describe your requirements...' if lang == 'en' else '请描述您的需求...规格、数量、用途等' }}"></textarea>
+                    </div>
+                    
+                    <!-- 隐藏字段存储购物车数据 -->
+                    <input type="hidden" name="items" id="cart-data-input">
+                    
+                    <button type="submit" class="w-full btn-primary text-white py-4 rounded-lg font-semibold text-lg hover:opacity-90">
+                        <i class="fas fa-paper-plane mr-2"></i>{{ 'Submit Inquiry' if lang == 'en' else '提交询价' }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 地图占位 -->
+    <div class="mt-8 bg-white rounded-xl shadow-sm p-4 h-64 flex items-center justify-center">
+        <div class="text-center text-gray-500">
+            <i class="fas fa-map-marked-alt text-4xl mb-2"></i>
+            <p>{{ 'Map will be displayed here' if lang == 'en' else '地图将在此显示' }}</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// 显示购物车内容
+function showCartItems() {
+    const items = JSON.parse(localStorage.getItem('cart') || '[]');
+    const container = document.getElementById('cart-items');
+    const list = document.getElementById('cart-items-list');
+    
+    if (items.length > 0) {
+        container.classList.remove('hidden');
+        list.innerHTML = items.map(i => `<div class="py-1">• ${i.name} (${i.sku || 'N/A'}) x${i.qty || 1}</div>`).join('');
+        document.getElementById('cart-data-input').value = JSON.stringify(items);
+        document.getElementById('products-input').value = items.map(i => `${i.name} x${i.qty || 1}`).join(', ');
+    }
+}
+
+function clearCart() {
+    localStorage.removeItem('cart');
+    location.reload();
+}
+
+showCartItems();
+</script>
+{% endblock %}
