@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiberglass Sleeving - Product Poster</title>
+  <script>p5.disableFriendlyErrors = true;</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden; background: #0d0d0d; }
+    canvas { display: block; margin: 0 auto; }
+  </style>
+</head>
+<body>
+<script>
+// ============================================================
+// Fiberglass Sleeving — 跨境电商产品卖点图
+// 工业风深色底 + 橙色点缀，展现黄腊管的高温/绝缘/柔韧特性
+// ============================================================
+
+const CONFIG = {
+  seed: 42,
+  canvasW: 1080,
+  canvasH: 1350,
+  fontFamily: 'Arial, Helvetica, sans-serif'
+};
+
+const PALETTE = {
+  bg: '#0f1117',
+  bgAccent: '#1a1d28',
+  gold: '#e8a838',
+  goldLight: '#f5c55a',
+  orange: '#e07c2e',
+  orangeAccent: '#ff6b35',
+  white: '#f0f0f0',
+  textLight: '#c8cbd0',
+  textDim: '#6b7080',
+  cardBg: 'rgba(26, 29, 40, 0.85)',
+  borderAccent: 'rgba(232, 168, 56, 0.3)',
+  iconBg: 'rgba(232, 168, 56, 0.12)'
+};
+
+let particles = [];
+let tubeAngle = 0;
+
+function preload() {
+  // No external font loading — using system fonts for GFW compatibility
+}
+
+function setup() {
+  createCanvas(CONFIG.canvasW, CONFIG.canvasH);
+  randomSeed(CONFIG.seed);
+  noiseSeed(CONFIG.seed);
+  colorMode(HSB, 360, 100, 100, 100);
+  textFont(CONFIG.fontFamily);
+
+  // 背景粒子 — 细小的漂浮光点
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: random(width),
+      y: random(height),
+      size: random(1, 3),
+      speedX: random(-0.2, 0.2),
+      speedY: random(-0.1, 0.1),
+      alpha: random(30, 80),
+      hueOffset: random(30, 50)  // 金色系
+    });
+  }
+}
+
+function draw() {
+  // 1. 背景
+  gradientBackground();
+  
+  // 2. 漂浮粒子
+  drawParticles();
+  
+  // 3. 装饰性网格线条
+  drawGrid();
+
+  // 4. 产品主体 — 黄腊管展示
+  drawProductTube();
+
+  // 5. 主标题
+  drawMainTitle();
+
+  // 6. 卖点卡牌（四格）
+  drawSellingPointCards();
+
+  // 7. 底部CTA和LOGO
+  drawFooter();
+
+  // 8. 认证标签
+  drawCertBadges();
+
+  noLoop();
+  
+  // Auto-trigger save after render
+  setTimeout(() => {
+    saveCanvas('ycsleeve-fiberglass-sleeving', 'png');
+  }, 1000);
+}
+
+// ===== 背景渐变 =====
+function gradientBackground() {
+  // 主背景
+  for (let y = 0; y < height; y++) {
+    let inter = map(y, 0, height, 0, 1);
+    let c = lerpColor(
+      color(15, 17, 23),
+      color(26, 29, 40),
+      inter
+    );
+    stroke(red(c), green(c), blue(c));
+    line(0, y, width, y);
+  }
+
+  // 底部暖色渐变（模拟热能）
+  noStroke();
+  for (let y = height - 200; y < height; y++) {
+    let inter = map(y, height - 200, height, 0, 1);
+    let a = inter * 60;
+    fill(232, 168, 56, a);
+    rect(0, y, width, 1);
+  }
+  
+  // 顶部的微妙聚光
+  for (let y = 0; y < 300; y++) {
+    let inter = map(y, 0, 300, 1, 0);
+    let a = inter * 15;
+    fill(232, 168, 56, a);
+    rect(0, y, width, 1);
+  }
+}
+
+// ===== 漂浮粒子 =====
+function drawParticles() {
+  noStroke();
+  for (let p of particles) {
+    p.x += p.speedX;
+    p.y += p.speedY;
+    if (p.x < 0) p.x = width;
+    if (p.x > width) p.x = 0;
+    if (p.y < 0) p.y = height;
+    if (p.y > height) p.y = 0;
+    
+    fill(232, 168, 56, p.alpha + sin(frameCount * 0.02 + p.x * 0.01) * 20);
+    ellipse(p.x, p.y, p.size, p.size);
+  }
+}
+
+// ===== 装饰网格 =====
+function drawGrid() {
+  stroke(232, 168, 56, 8);
+  strokeWeight(0.5);
+  // 水平线
+  for (let y = 0; y < height; y += 80) {
+    line(0, y, width, y);
+  }
+  // 垂直线
+  for (let x = 0; x < width; x += 80) {
+    line(x, 0, x, height);
+  }
+}
+
+// ===== 黄腊管产品展示 =====
+function drawProductTube() {
+  push();
+  translate(width / 2, 330);
+
+  // 发光背景
+  for (let r = 80; r > 0; r -= 5) {
+    fill(232, 168, 56, map(r, 80, 0, 3, 0));
+    noStroke();
+    ellipse(0, 0, 350 + r, 350 + r);
+  }
+
+  // 管体 — 黄腊管主体（编织纹）
+  const tubeW = 240;
+  const tubeH = 240;
+  
+  // 外层编织效果
+  for (let i = 0; i < 30; i++) {
+    let angle = map(i, 0, 30, 0, TWO_PI);
+    let x = cos(angle) * tubeW/2;
+    let y = sin(angle) * tubeH/2;
+    stroke(212, 180, 100, 60 + i * 2);
+    strokeWeight(2);
+    line(0, 0, x, y);
+  }
+
+  // 编织交叉纹路
+  for (let i = 0; i < 16; i++) {
+    let angle1 = map(i, 0, 16, 0, TWO_PI);
+    let angle2 = map(i + 8, 0, 16, 0, TWO_PI);
+    let r = tubeW/2 - 10;
+    let x1 = cos(angle1) * r;
+    let y1 = sin(angle1) * r;
+    let x2 = cos(angle2) * r;
+    let y2 = sin(angle2) * r;
+    stroke(180, 140, 70, 40);
+    strokeWeight(1);
+    line(x1, y1, x2, y2);
+  }
+  
+  // 管体环
+  noFill();
+  stroke(232, 168, 56, 100);
+  strokeWeight(12);
+  ellipse(0, 0, tubeW, tubeH);
+  stroke(200, 150, 60, 120);
+  strokeWeight(6);
+  ellipse(0, 0, tubeW - 20, tubeH - 20);
+  stroke(150, 100, 40, 60);
+  strokeWeight(2);
+  ellipse(0, 0, tubeW, tubeH);
+
+  // 中心标注文字
+  fill(240, 240, 240, 180);
+  noStroke();
+  textFont(CONFIG.fontFamily);
+  textSize(32);
+  textStyle(BOLD);
+  textAlign(CENTER, CENTER);
+  fill(245, 197, 90);
+  text("YCSLEEVE", 0, -40);
+
+  textStyle(NORMAL);
+  textSize(18);
+  fill(200, 200, 200, 160);
+  text("FIBERGLASS\nSLEEVING", 0, 20);
+
+  // 温度标注弧线
+  noFill();
+  stroke(255, 107, 53, 80);
+  strokeWeight(1);
+  arc(0, 0, tubeW + 40, tubeH + 40, PI * 0.2, PI * 0.8);
+  stroke(255, 107, 53, 120);
+  arc(0, 0, tubeW + 50, tubeH + 50, PI * 0.2, PI * 0.8);
+  
+  // 温度标签
+  textSize(13);
+  textStyle(BOLD);
+  fill(255, 107, 53);
+  noStroke();
+  text("🔥 600°C", 150, -30);
+
+  // UL认证标签
+  textSize(11);
+  textStyle(NORMAL);
+  fill(200, 200, 200, 150);
+  text("UL • VDE Certified", -100, 160);
+
+  pop();
+}
+
+// ===== 主标题 =====
+function drawMainTitle() {
+  push();
+  translate(width / 2, 80);
+
+  noStroke();
+
+  // 副标题
+  textFont(CONFIG.fontFamily);
+  textSize(14);
+  textStyle(NORMAL);
+  fill(232, 168, 56, 160);
+  textAlign(CENTER, CENTER);
+  text("●  YC INSULATION  ●", 0, -25);
+
+  // 主标题
+  textSize(36);
+  textStyle(BOLD);
+  fill(240, 240, 240);
+  text("High-Temperature", 0, 20);
+
+  textSize(42);
+  textStyle(BOLD);
+  fill(245, 197, 90);
+  text("Fiberglass Sleeving", 0, 68);
+
+  // 热底线
+  stroke(232, 168, 56, 60);
+  strokeWeight(1);
+  line(-120, 90, 120, 90);
+
+  pop();
+}
+
+// ===== 卖点卡牌 4格 =====
+function drawSellingPointCards() {
+  const cards = [
+    {
+      icon: "🔥",
+      title: "600°C Heat\nResistance",
+      desc: "Continuous operation\nup to 600°C without\nmelting or degrading"
+    },
+    {
+      icon: "⚡",
+      title: "Class H\nInsulation",
+      desc: "Dielectric strength\n>5kV — superior\nelectrical protection"
+    },
+    {
+      icon: "🛡️",
+      title: "UL / VDE\nCertified",
+      desc: "International safety\nstandards approved.\nTrusted worldwide."
+    },
+    {
+      icon: "💪",
+      title: "Flexible &\nDurable",
+      desc: "Easy to install, bends\nwithout cracking.\nLong service life."
+    }
+  ];
+
+  const startX = 84;
+  const startY = 500;
+  const cardW = 220;
+  const cardH = 310;
+  const gap = 24;
+
+  for (let i = 0; i < cards.length; i++) {
+    let x = startX + i * (cardW + gap);
+    let y = startY;
+    let c = cards[i];
+
+    // 卡片背景
+    fill(26, 29, 40, 220);
+    noStroke();
+    rect(x, y, cardW, cardH, 12);
+
+    // 顶部装饰条
+    fill(232, 168, 56, 50);
+    rect(x, y, cardW, 4, 12, 12, 0, 0);
+
+    // 图标圆形背景
+    fill(232, 168, 56, 20);
+    noStroke();
+    circle(x + cardW/2, y + 55, 55);
+    
+    fill(232, 168, 56, 12);
+    circle(x + cardW/2, y + 55, 70);
+
+    // 图标
+    textSize(28);
+    textAlign(CENTER, CENTER);
+    fill(245, 197, 90);
+    text(c.icon, x + cardW/2, y + 55);
+
+    // 标题
+    textSize(16);
+    textStyle(BOLD);
+    fill(240, 240, 240);
+    textLeading(22);
+    text(c.title, x + cardW/2, y + 110);
+
+    // 分割线
+    stroke(232, 168, 56, 40);
+    strokeWeight(1);
+    line(x + 30, y + 165, x + cardW - 30, y + 165);
+
+    // 描述
+    textSize(12);
+    textStyle(NORMAL);
+    fill(160, 165, 180);
+    textLeading(18);
+    text(c.desc, x + cardW/2, y + 190);
+
+    // 底部编号
+    textSize(10);
+    textStyle(BOLD);
+    fill(232, 168, 56, 60);
+    text("0" + (i + 1), x + cardW - 40, y + cardH - 25);
+  }
+}
+
+// ===== 底部 =====
+function drawFooter() {
+  push();
+  translate(width / 2, 1260);
+
+  // CTA 按钮背景
+  fill(232, 168, 56);
+  noStroke();
+  rect(-130, 0, 260, 44, 22);
+  
+  // 按钮发光
+  noFill();
+  stroke(232, 168, 56, 40);
+  strokeWeight(8);
+  rect(-130, 0, 260, 44, 22);
+
+  // CTA 文字
+  noStroke();
+  fill(15, 17, 23);
+  textSize(14);
+  textStyle(BOLD);
+  textAlign(CENTER, CENTER);
+  text("📩 INQUIRE NOW  →", 0, 0);
+
+  // 底部信息
+  textSize(11);
+  textStyle(NORMAL);
+  fill(107, 112, 128);
+  text("🔹 Factory Direct  🔹 OEM / ODM  🔹 Global Shipping", 0, 70);
+
+  fill(80, 85, 100);
+  textSize(10);
+  text("YC INSULATION · Since 2008 · ycsleeve.com", 0, 95);
+
+  pop();
+}
+
+// ===== 认证标签 =====
+function drawCertBadges() {
+  push();
+
+  // UL 标签
+  noFill();
+  stroke(232, 168, 56, 40);
+  strokeWeight(1);
+  rect(40, 175, 70, 24, 12);
+  fill(232, 168, 56, 100);
+  noStroke();
+  textSize(10);
+  textStyle(BOLD);
+  textAlign(CENTER, CENTER);
+  text("UL", 75, 187);
+
+  // VDE 标签
+  noFill();
+  stroke(232, 168, 56, 40);
+  strokeWeight(1);
+  rect(120, 175, 75, 24, 12);
+  fill(232, 168, 56, 100);
+  noStroke();
+  textSize(10);
+  textStyle(BOLD);
+  text("VDE", 157, 187);
+
+  // ROHS 标签
+  noFill();
+  stroke(232, 168, 56, 40);
+  strokeWeight(1);
+  rect(205, 175, 80, 24, 12);
+  fill(232, 168, 56, 100);
+  noStroke();
+  text("RoHS", 245, 187);
+
+  pop();
+}
+
+function keyPressed() {
+  if (key === 's' || key === 'S') saveCanvas('ycsleeve-fiberglass-sleeving', 'png');
+}
+</script>
+</body>
+</html>
